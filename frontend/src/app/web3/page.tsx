@@ -5,13 +5,13 @@ import { createSmartAccountClient, BiconomySmartAccountV2, PaymasterMode } from 
 import { ethers, providers } from "ethers";
 import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { contractABI } from "../contract/contractABI";
+import { contractABI } from "@/contract/contractABI";
 import { toast } from "react-toastify";
-import { chains } from '../conf/chains';
+import { chains } from '@/conf/chains';
 import "react-toastify/dist/ReactToastify.css";
-import ChainSelector from "../components/ChainSelector";
-import SmartAccountInfo from "../components/SmartAccountInfo";
-import TransactionButtons from "../components/TransactionButtons";
+import ChainSelector from "@/components/ChainSelector";
+import SmartAccountInfo from "@/components/SmartAccountInfo";
+import TransactionButtons from "@/components/TransactionButtons";
 
 export default function Home() {
   // ステートとチェーン情報の定義はそのまま
