@@ -21,4 +21,4 @@ jobs:
     - name: Push changes to remote
       run: |
         git remote add other_remote https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/2024-Hackathon-by-42-in-Asia/42-Tokyo-Repository.git
-        git push other_remote main
+        git push other_remote konaito/readme-hello
