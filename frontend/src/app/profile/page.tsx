@@ -1,17 +1,88 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { User, Clock, MapPin, Package, MessageSquare, Percent, Wallet, Award, Leaf } from 'lucide-react';
+import { ethers } from 'ethers';
+import { PaymasterMode } from '@biconomy/account';
+import { erc721ABI } from '@/contract/erc721ABI';
+import { chains } from '@/conf/chains';
+import { shortenWalletAddress } from '@/utils/shorten';
+import { useWeb3Auth } from '@/context/web3AuthContext';
+import { createSepoliaEtherscanLink } from '@/utils/etherscan'
 
 const DeliveryProfile = () => {
+
+  const { smartAccount, connect, smartAccountAddress } = useWeb3Auth()
+  const [txStatus, setTxnStatus] = useState("not yet");
+
+  const getButtonLabel = () => {
+    switch (txStatus) {
+        case "not yet":
+            return "Issue Eco-Driver NFT";
+        case "process":
+            return "Tx Processing...";
+        case "done":
+            return "Issued Successfully";
+        default:
+            return "Unknown Status";
+    }
+  };
+
+
+  const mintNFT = async () => {
+    const tokenURI = 'ipfs://sample'; // Replace with your actual token URI
+    const chainSelected = 0; // Update if you have chain selection logic
+
+    setTxnStatus("process");
+
+    const mintData = new ethers.utils.Interface(erc721ABI[0].abi).encodeFunctionData(
+      'mintToken',
+      [tokenURI]
+    );
+
+    const mintTx = {
+      to: chains[chainSelected].erc721Contract,
+      data: mintData,
+      from: smartAccountAddress,
+      gasLimit: 300000,
+    };
+
+    if (smartAccount) {
+      try {
+        const userOpResponse = await smartAccount.sendTransaction(mintTx, {
+          paymasterServiceData: { mode: PaymasterMode.SPONSORED },
+        });
+        const { transactionHash } = await userOpResponse.waitForTxHash();
+        setTxnStatus("done")
+        // @ts-expect-error: this is any type
+        console.log(createSepoliaEtherscanLink(transactionHash));
+        // Optionally, you can update the UI or notify the user
+      } catch (error) {
+        console.error('Minting failed:', error);
+      }
+    } else {
+      console.error('Smart account is not initialized.');
+    }
+  };
   return (
     <div className="h-screen flex flex-col bg-white relative">
       <div className="absolute top-4 right-4 flex items-center">
         <Wallet className="w-5 h-5 mr-2 text-gray-600" />
-        <span className="text-sm text-gray-600">0x1234...5678</span>
+        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600">
+          {smartAccountAddress ? shortenWalletAddress(smartAccountAddress) : 'Not Connected'}
+        </span>
+
+        </span>
       </div>
       <div className="absolute top-4 left-4">
-        <button className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+        <button
+          className="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+          onClick={mintNFT}
+          disabled={!smartAccount}
+        >
           <Leaf className="w-5 h-5 mr-2" />
-          <span className="text-sm font-semibold">Issue Eco-Driver NFT</span>
+          <span className="text-sm font-semibold">{getButtonLabel()}</span>
         </button>
       </div>
       <div className="flex-grow flex flex-col justify-between p-4 text-center mr-5 ml-5 mt-16">

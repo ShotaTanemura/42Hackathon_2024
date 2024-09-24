@@ -101,6 +101,8 @@ func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationWrapper) (int, []float) {
 	score := initialScore
 	var magnitudes []float
+	length := len(motions)
+	deductionPoint := 100 / ((length / 120) + 1)
 
 	for _, motionWrapper := range motions {
 		motion := motionWrapper.Motion
@@ -110,7 +112,7 @@ func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationW
 
 		// Check if the acceleration exceeds the threshold
 		if accelerationMagnitude > accelerationThreshold {
-			score -= 10 // Decrease score if acceleration exceeds the threshold
+			score -= deductionPoint // Decrease score if acceleration exceeds the threshold
 		}
 
 		magnitudes = append(magnitudes, accelerationMagnitude)

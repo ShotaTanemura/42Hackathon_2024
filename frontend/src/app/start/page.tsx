@@ -1,3 +1,4 @@
+// frontend/src/app/start/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -5,6 +6,8 @@ import { OptionButton } from '@/components/OptionButton'
 import { vehicleOptions, bagOptions } from '@/config/driveOption'
 import { useRouter } from 'next/navigation'
 import { SplashScreen } from '@/components/SplashScreen'
+import { useWeb3Auth } from '@/context/web3AuthContext'
+import { shortenWalletAddress } from '@/utils/shorten'
 
 const MainComponent = () => {
   const router = useRouter()
@@ -13,15 +16,34 @@ const MainComponent = () => {
   const [temperature, setTemperature] = useState<string>('')
   const [autoAccept, setAutoAccept] = useState<boolean>(false)
 
+  const { smartAccount, connect, smartAccountAddress } = useWeb3Auth()
 
   const isFormValid = () => {
-    return vehicleType && bagType && temperature
+    return vehicleType && bagType && temperature && smartAccount
   }
+
+  useEffect(() => {
+    console.log({ smartAccount });
+  }, [])
 
   return (
     <div className="w-full h-screen flex flex-col justify-between p-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Start working</h2>
+        {!smartAccount && (
+          <button
+            className="w-[10rem] h-[3rem] bg-white text-[#D70F64] font-bold rounded-lg border-[#D70F64]"
+            onClick={() => {
+              connect()
+            }}
+          >
+            Sign In
+          </button>
+        )}
+        {smartAccount && (
+          // @ts-expect-error: this is any type
+          <span className="text-[#D70F64] font-semibold">{shortenWalletAddress(smartAccountAddress)}</span>
+        )}
       </div>
 
       <div className="space-y-6 flex-grow">
@@ -92,7 +114,7 @@ const MainComponent = () => {
             : 'bg-gray-300 cursor-not-allowed'
         }`}
         disabled={!isFormValid()}
-        onClick={() => router.push('/wait')}
+        onClick={() => router.push('/accept')}
       >
         Start
       </button>
