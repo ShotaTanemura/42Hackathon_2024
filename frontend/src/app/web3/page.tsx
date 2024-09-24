@@ -1,21 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { createSmartAccountClient, BiconomySmartAccountV2, PaymasterMode } from "@biconomy/account";
+import { createSmartAccountClient, PaymasterMode } from "@biconomy/account";
 import { ethers, providers } from "ethers";
 import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { erc721ABI } from "@/contract/erc721ABI";
-// import { toast } from "react-toastify";
 import { chains } from '@/conf/chains';
 import "react-toastify/dist/ReactToastify.css";
 import ChainSelector from "@/components/ChainSelector";
 import SmartAccountInfo from "@/components/SmartAccountInfo";
 import TransactionButtons from "@/components/TransactionButtons";
+import { useWeb3Auth } from "@/context/web3AuthContext";
 
 export default function Home() {
-  const [smartAccount, setSmartAccount] = useState<BiconomySmartAccountV2 | null>(null);
-  const [smartAccountAddress, setSmartAccountAddress] = useState<string | null>(null);
+  const { smartAccount, setSmartAccount, smartAccountAddress, setSmartAccountAddress } = useWeb3Auth();
+  // const [smartAccount, setSmartAccount] = useState<BiconomySmartAccountV2 | null>(null);
+  // const [smartAccountAddress, setSmartAccountAddress] = useState<string | null>(null);
   const [txnHash, setTxnHash] = useState<string | null>(null);
   const [chainSelected, setChainSelected] = useState<number>(0);
 
