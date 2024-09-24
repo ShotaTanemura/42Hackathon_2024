@@ -8,11 +8,26 @@ import { erc20ABI } from "@/contract/erc20ABI";
 import { PaymasterMode } from "@biconomy/account";
 
 export default function ResultPage() {
-  const amount = 10;
+  const amount = 100;
   const [coins, setCoins] = useState<number[]>([]);
   const [isMinted, setIsMinted] = useState(false);
   const router = useRouter();
   const { smartAccount, smartAccountAddress } = useWeb3Auth(); 
+  const [txStatus, setTxnStatus] = useState("not yet");
+
+  const getButtonLabel = () => {
+    switch (txStatus) {
+      case "not yet":
+        return `Mint ${amount} $CBT`;
+      case "process":
+        return "Mint Processing...";
+      case "done":
+        // Your code for "done" case
+        return "Mint Completed";
+      default:
+        return "Unknown Status";
+    }
+  };
 
   useEffect(() => {
     const response: string | null = localStorage.getItem("response");
@@ -24,7 +39,11 @@ export default function ResultPage() {
       alert("Smart account is not initialized.");
       return;
     }
-
+ 
+    setTxnStatus("process");
+    console.log("$CBT has been minted!");
+    generateCoins();
+  
     console.log("Smart Account Address:", smartAccountAddress); 
     try {
       const erc20ContractAddress = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_CONTRACT || ""; // ERC20 contract address
@@ -46,7 +65,7 @@ export default function ResultPage() {
       });
       const { transactionHash } = await userOpResponse.waitForTxHash();
       console.log("Mint Transaction Hash:", transactionHash);
-
+      setTxStatus("done");
       setIsMinted(true);
       generateCoins();
       setTimeout(() => {
@@ -55,8 +74,7 @@ export default function ResultPage() {
     } catch (error) {
       console.error("Mint failed:", error);
     }
-  };
-
+  
   const generateCoins = () => {
     const newCoins: number[] = [];
     for (let i = 0; i < 20; i++) {
@@ -81,7 +99,9 @@ export default function ResultPage() {
         className="px-6 py-3 bg-white text-[#D70F64] font-bold rounded-lg hover:bg-gray-200 transition"
         disabled={isMinted}
       >
-        {isMinted ? 'Minted Successfully' : `Mint ${amount} $CBT`} {/* ボタンのテキスト変更 */}
+        {getButtonLabel()}
+        {/* ボタンのテキスト変更 */}
+
       </button>
       <div className="coin-container absolute w-full h-full top-0 left-0 pointer-events-none">
         {coins.map((coin, index) => (

@@ -114,7 +114,7 @@ const MainComponent = () => {
             : 'bg-gray-300 cursor-not-allowed'
         }`}
         disabled={!isFormValid()}
-        onClick={() => router.push('/profile')}
+        onClick={() => router.push('/accept')}
       >
         Start
       </button>
