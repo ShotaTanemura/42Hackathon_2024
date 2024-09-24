@@ -12,6 +12,9 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 	router.POST("/api/v1/deliveries/:uuid/scores", func(c *gin.Context) {
 		PostDeliveryScores(c, db)
 	}) // This function is now imported from delivery_scores.go
+	router.POST("/api/v1/deliveries/:uuid", func(c *gin.Context) {
+		PostDeliveryInfo(c, db)
+	}) // This function is now imported from delivery_scores.go
 }
 
 // GetHelloWorld handles the GET request for a simple hello world response
