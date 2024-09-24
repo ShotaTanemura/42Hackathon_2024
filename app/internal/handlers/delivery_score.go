@@ -97,10 +97,12 @@ func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 }
 
 // CalculateDeliveryScore calculates the score based on motion data
-func CalculateDeliveryScore(motions []Motion, orientations []Orientation) int {
+func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationWrapper) int {
 	score := initialScore
 
-	for _, motion := range motions {
+	for _, motionWrapper := range motions {
+		motion := motionWrapper.Motion
+
 		// Calculate the magnitude of acceleration vector
 		accelerationMagnitude := math.Sqrt(motion.X*motion.X + motion.Y*motion.Y + motion.Z*motion.Z)
 
