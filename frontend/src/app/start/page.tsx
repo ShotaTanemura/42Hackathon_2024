@@ -19,7 +19,7 @@ const MainComponent = () => {
   const { smartAccount, connect, smartAccountAddress } = useWeb3Auth()
 
   const isFormValid = () => {
-    return vehicleType && bagType && temperature
+    return vehicleType && bagType && temperature && smartAccount
   }
 
   useEffect(() => {
@@ -114,7 +114,7 @@ const MainComponent = () => {
             : 'bg-gray-300 cursor-not-allowed'
         }`}
         disabled={!isFormValid()}
-        onClick={() => router.push('/wait')}
+        onClick={() => router.push('/profile')}
       >
         Start
       </button>
