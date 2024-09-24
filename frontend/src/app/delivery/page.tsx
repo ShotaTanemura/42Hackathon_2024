@@ -2,10 +2,9 @@
 
 import { useCurrentLocation } from '@/hooks/currentLocation'
 import { RouteMap } from '@/components/RouteMap'
-import { useRouter } from 'next/navigation'
+import DataCollectorButton from '@/components/DataCollectorButton'
 
 const DeliveryPage = () => {
-  const router = useRouter()
   const currentLocation = useCurrentLocation()
   return (
     <div className="relative h-screen w-full flex flex-col">
@@ -31,10 +30,7 @@ const DeliveryPage = () => {
           </div>
         </div>
         <div className="flex justify-end p-6">
-          <button className="bg-white text-[#D70F64] font-bold py-2 px-4 rounded-lg text-lg"
-            onClick={() => router.push('/result')}>
-            Delivery Done!
-          </button>
+          <DataCollectorButton />
         </div>
       </div>
     </div>
