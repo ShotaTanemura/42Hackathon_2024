@@ -1,0 +1,128 @@
+openapi: '3.0.2'
+info:
+  title: FoodpandaCarbontokenApp API
+  description: "This is API for FoodpandaCarbontokenApp"
+  version: '1.0'
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/deliveries/{uuid}/scores:
+    post:
+      summary: Calculate and save driver's delivery score
+      parameters:
+        - name: uid
+          in: path
+          description: UUID
+          required: true
+          schema:
+            type: string
+          example: b4cf1ef4-1cab-490b-a32c-f6528f95c796
+      requestBody:
+        content:
+          "application/json":
+            schema:
+                $ref: "#/components/schemas/postDeliveriesScoresRequest"
+        required: true
+      responses:
+        "201":
+          description: Succeeded in saving scores
+          content:
+              "application/json":
+                schema:
+                  $ref: "#/components/schemas/postDeliveriesScoresResponse"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "404":
+          $ref: "#/components/responses/notFoundError"
+components:
+  responses:
+    badRequest:
+      description: リクエスト内容が不正
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorMessage"
+    conflictError:
+      description: 重複するリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorMessage"
+    notFoundError:
+      description: データが見つからない
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorMessage"
+  schemas:
+    postDeliveriesScoresRequest:
+      type: object
+      properties:
+        motions:
+          type: array
+          description: array of motions
+          example: array of motions
+          items:
+            type: object
+            properties:
+              x:
+                type: array
+                items:
+                  type: integer
+              y:
+                type: array
+                items:
+                  type: integer
+              z:
+                type: array
+                items:
+                  type: integer
+        oritentations:
+          type: array
+          description: array of oritentations
+          example: array of oritentations
+          items:
+            type: object
+            properties:
+              alpha:
+                type: array
+                items:
+                  type: integer
+              beta:
+                type: array
+                items:
+                  type: integer
+              gamma:
+                type: array
+                items:
+                  type: integer
+      required:
+        - motions
+        - oritentations
+    postDeliveriesScoresResponse:
+      type: object
+      description: Succeeded in saving scores
+      properties:
+        score:
+          type: integer
+          description: delivery score
+          example: 100
+      required:
+        - score
+    errorMessage:
+      type: object
+      properties:
+        message:
+          description: エラーメッセージ
+          type: string
+        status:
+          description: エラーステータス
+          type: string
+          enum:
+            - invalidParams # リクエストパラメータのバリデーションに失敗した場合
+            - registerConflict # ユーザーによるユーザー登録時にコンフリクトした場合
+            - userNotFound # ユーザーが見つからない場合
+            - unauthorized # 認証が失敗した場合
+      required:
+        - message
+        - status
