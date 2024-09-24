@@ -6,13 +6,14 @@ import { ethers } from "ethers";
 import { useWeb3Auth } from "@/context/web3AuthContext";
 import { erc20ABI } from "@/contract/erc20ABI";
 import { PaymasterMode } from "@biconomy/account";
+import { createSepoliaEtherscanLink } from "@/utils/etherscan";
 
 export default function ResultPage() {
   const amount = 100;
   const [coins, setCoins] = useState<number[]>([]);
   const [isMinted, setIsMinted] = useState(false);
   const router = useRouter();
-  const { smartAccount, smartAccountAddress } = useWeb3Auth(); 
+  const { smartAccount, smartAccountAddress } = useWeb3Auth();
   const [txStatus, setTxnStatus] = useState("not yet");
 
   const getButtonLabel = () => {
@@ -22,7 +23,6 @@ export default function ResultPage() {
       case "process":
         return "Mint Processing...";
       case "done":
-        // Your code for "done" case
         return "Mint Completed";
       default:
         return "Unknown Status";
@@ -32,26 +32,37 @@ export default function ResultPage() {
   useEffect(() => {
     const response: string | null = localStorage.getItem("response");
     alert(`response: ${response}`);
-  });
+  }, []);
 
   const handleMint = async () => {
     if (!smartAccount || !smartAccountAddress) {
       alert("Smart account is not initialized.");
       return;
     }
- 
+
+    // Move generateCoins function here
+    const generateCoins = () => {
+      const newCoins: number[] = [];
+      for (let i = 0; i < 20; i++) {
+        newCoins.push(i);
+      }
+      setCoins(newCoins);
+
+      setTimeout(() => {
+        setCoins([]);
+      }, 3000);
+    };
+
     setTxnStatus("process");
     console.log("$CBT has been minted!");
-    generateCoins();
-  
-    console.log("Smart Account Address:", smartAccountAddress); 
+    console.log("Smart Account Address:", smartAccountAddress);
+
     try {
-      const erc20ContractAddress = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_CONTRACT || ""; // ERC20 contract address
-      const mintAmount = ethers.utils.parseUnits(amount.toString(), 18); // Token amount with 18 decimals
-      // Encode the mint function data using ethers
+      const erc20ContractAddress = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_CONTRACT || "";
+      const mintAmount = ethers.utils.parseUnits(amount.toString(), 18);
       const mintData = new ethers.utils.Interface(erc20ABI[0].abi).encodeFunctionData("mint", [
-        smartAccountAddress, // Minting to smartAccountAddress
-        mintAmount, // Mint amount
+        smartAccountAddress,
+        mintAmount,
       ]);
       const mintTx = {
         to: erc20ContractAddress,
@@ -59,34 +70,22 @@ export default function ResultPage() {
         from: smartAccountAddress,
         gasLimit: 300000,
       };
-      // Send transaction via Biconomy Smart Account
       const userOpResponse = await smartAccount.sendTransaction(mintTx, {
-        paymasterServiceData: { mode: PaymasterMode.SPONSORED }, // Sponsored transaction
+        paymasterServiceData: { mode: PaymasterMode.SPONSORED },
       });
       const { transactionHash } = await userOpResponse.waitForTxHash();
-      console.log("Mint Transaction Hash:", transactionHash);
-      setTxStatus("done");
+       // @ts-expect-error: this is any type
+      console.log(createSepoliaEtherscanLink(transactionHash));
+      setTxnStatus("done");
       setIsMinted(true);
-      generateCoins();
+      generateCoins(); // Now it's called after declaration
       setTimeout(() => {
         router.push("/profile");
       }, 3000);
     } catch (error) {
       console.error("Mint failed:", error);
     }
-  
-  const generateCoins = () => {
-    const newCoins: number[] = [];
-    for (let i = 0; i < 20; i++) {
-      newCoins.push(i);
-    }
-    setCoins(newCoins);
-
-    setTimeout(() => {
-      setCoins([]);
-    }, 3000);
   };
-
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-[#D70F64] relative">
@@ -100,8 +99,6 @@ export default function ResultPage() {
         disabled={isMinted}
       >
         {getButtonLabel()}
-        {/* ボタンのテキスト変更 */}
-
       </button>
       <div className="coin-container absolute w-full h-full top-0 left-0 pointer-events-none">
         {coins.map((coin, index) => (
@@ -110,8 +107,8 @@ export default function ResultPage() {
             className="coin"
             style={{
               left: `${Math.random() * 100}%`,
-              animationDuration: `${2 + Math.random() * 3}s`, // 2秒〜5秒のランダムな時間
-              transform: `translateY(${Math.random() * 300 + 100}%)` // ランダムな距離
+              animationDuration: `${2 + Math.random() * 3}s`,
+              transform: `translateY(${Math.random() * 300 + 100}%)`
             }}
           >
             <span className="dollar">$</span>
@@ -126,9 +123,9 @@ export default function ResultPage() {
         .coin {
           position: absolute;
           bottom: 0;
-          width: 80px; /* 大きさを小さく */
+          width: 80px;
           height: 80px;
-          background: radial-gradient(circle, #FFD700, #FFA500); /* 金色っぽい配色 */
+          background: radial-gradient(circle, #FFD700, #FFA500);
           border-radius: 50%;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
           animation: floatUp 3s ease-in-out forwards;
@@ -141,7 +138,7 @@ export default function ResultPage() {
           opacity: 0;
         }
         .dollar {
-          color: #FFF700; /* ドル記号を少し明るい色に */
+          color: #FFF700;
         }
         @keyframes floatUp {
           0% {
