@@ -66,17 +66,14 @@ components:
             type: object
             properties:
               x:
-                type: array
-                items:
-                  type: integer
+                type: number
+                format: float
               y:
-                type: array
-                items:
-                  type: integer
+                type: number
+                format: float
               z:
-                type: array
-                items:
-                  type: integer
+                type: number
+                format: float
         oritentations:
           type: array
           description: array of oritentations
@@ -85,17 +82,14 @@ components:
             type: object
             properties:
               alpha:
-                type: array
-                items:
-                  type: integer
+                type: number
+                format: float
               beta:
-                type: array
-                items:
-                  type: integer
+                type: number
+                format: float
               gamma:
-                type: array
-                items:
-                  type: integer
+                type: number
+                format: float
       required:
         - motions
         - oritentations
