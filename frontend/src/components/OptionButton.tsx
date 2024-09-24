@@ -1,15 +1,18 @@
+import { LucideProps } from 'lucide-react';
+import { FC } from 'react';
+
 type OptionButtonProps<T extends string> = {
-  type: T
-  selectedType: T | null
-  setType: (type: T) => void
-  icon: string
-}
+  type: T;
+  selectedType: T | null;
+  setType: (type: T) => void;
+  icon: FC<LucideProps>
+};
 
 export const OptionButton = <T extends string>({
   type,
   selectedType,
   setType,
-  icon,
+  icon: Icon, // Destructure the icon prop as Icon
 }: OptionButtonProps<T>) => {
   return (
     <button
@@ -20,8 +23,8 @@ export const OptionButton = <T extends string>({
       } flex flex-col items-center justify-center`}
       onClick={() => setType(type)}
     >
-      {icon}
+      <Icon className="h-6 w-6" /> {/* Render the icon component */}
       <span className="mt-2">{type}</span>
     </button>
-  )
-}
+  );
+};
