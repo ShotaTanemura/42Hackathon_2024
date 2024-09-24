@@ -7,12 +7,14 @@ import (
 	"github.com/google/uuid"
 	"carbon_driver_app/internal/accessdb"
 	"time"
+	"math"
 )
 
 // Constants for score thresholds
 const (
-	threshold          = 5.0  // Replace with appropriate value for sudden stops/accelerations
-	orientationThreshold = 10.0 // Replace with appropriate value for orientation changes
+	initialScore			= 100
+	accelerationThreshold	= 5.0  // Replace with appropriate value for sudden stops/accelerations
+	// orientationThreshold = 10.0 // Replace with appropriate value for orientation changes
 )
 
 // generateUniqueID generates a new unique ID
@@ -26,16 +28,18 @@ type DeliveryData struct {
 	Orientations []Orientation  `json:"orientations"`
 }
 
+type float = float64
+
 type Motion struct {
-	X []float `json:"x"`
-	Y []float `json:"y"`
-	Z []float `json:"z"`
+	X float `json:"x"`
+	Y float `json:"y"`
+	Z float `json:"z"`
 }
 
 type Orientation struct {
-	Alpha []float `json:"alpha"`
-	Beta  []float `json:"beta"`
-	Gamma []float `json:"gamma"`
+	Alpha float `json:"alpha"`
+	Beta  float `json:"beta"`
+	Gamma float `json:"gamma"`
 }
 
 // PostDeliveryScores handles the incoming delivery scores request
@@ -83,7 +87,7 @@ func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 }
 
 // CalculateDeliveryScore calculates the score based on motion data
-func CalculateDeliveryScore(motions []Acceleration, orientations []Orientation) int {
+func CalculateDeliveryScore(motions []Motion, orientations []Orientation) int {
 	score := initialScore
 
 	for _, motion := range motions {
