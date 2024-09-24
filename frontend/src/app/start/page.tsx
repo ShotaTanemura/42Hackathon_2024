@@ -7,6 +7,7 @@ import { vehicleOptions, bagOptions } from '@/config/driveOption'
 import { useRouter } from 'next/navigation'
 import { SplashScreen } from '@/components/SplashScreen'
 import { useWeb3Auth } from '@/context/web3AuthContext'
+import { shortenWalletAddress } from '@/utils/shorten'
 
 const MainComponent = () => {
   const router = useRouter()
@@ -15,7 +16,7 @@ const MainComponent = () => {
   const [temperature, setTemperature] = useState<string>('')
   const [autoAccept, setAutoAccept] = useState<boolean>(false)
 
-  const { smartAccount, connect } = useWeb3Auth()
+  const { smartAccount, connect, smartAccountAddress } = useWeb3Auth()
 
   const isFormValid = () => {
     return vehicleType && bagType && temperature
@@ -31,9 +32,8 @@ const MainComponent = () => {
         <h2 className="text-2xl font-bold">Start working</h2>
         {!smartAccount && (
           <button
-            className="w-[10rem] h-[3rem] bg-[#D70F64] text-black font-bold rounded-lg"
+            className="w-[10rem] h-[3rem] bg-white text-[#D70F64] font-bold rounded-lg border-[#D70F64]"
             onClick={() => {
-              console.log("sign in");
               connect()
             }}
           >
@@ -41,7 +41,8 @@ const MainComponent = () => {
           </button>
         )}
         {smartAccount && (
-          <span className="text-green-500 font-semibold">Connected</span>
+          // @ts-expect-error: this is any type
+          <span className="text-[#D70F64] font-semibold">{shortenWalletAddress(smartAccountAddress)}</span>
         )}
       </div>
 
