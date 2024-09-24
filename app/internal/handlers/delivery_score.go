@@ -75,7 +75,7 @@ func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 	}
 
 	// Call the function to calculate the score based on motions and orientations
-	score := CalculateDeliveryScore(data.Motions, data.Orientations)
+	score, magnitudes := CalculateDeliveryScore(data.Motions, data.Orientations)
 
 	// Save the score to the database
 	deliveryScore := accessdb.DeliveryScore{
@@ -93,12 +93,14 @@ func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"score": score,
+		"magnitudes": magnitudes,
 	})
 }
 
 // CalculateDeliveryScore calculates the score based on motion data
-func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationWrapper) int {
+func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationWrapper) int, []float {
 	score := initialScore
+	var magnitudes []float
 
 	for _, motionWrapper := range motions {
 		motion := motionWrapper.Motion
@@ -110,10 +112,12 @@ func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationW
 		if accelerationMagnitude > accelerationThreshold {
 			score -= 10 // Decrease score if acceleration exceeds the threshold
 		}
+
+		magnitudes = append(magnitudes, accelerationMagnitude)
 	}
 
 	// Optionally, include logic for orientation checks here
 	_ = orientations
 
-	return score
+	return score, magnitudes
 }
