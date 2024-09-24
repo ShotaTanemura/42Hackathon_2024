@@ -31,7 +31,7 @@ func main() {
 	router := gin.Default()
 
 	// Set up routes (from handlers)
-	handlers.SetupRoutes(router)
+	handlers.SetupRoutes(router, db)
 
 	// Start the server on port 8000
 	router.Run(":8000")
