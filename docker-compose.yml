@@ -12,6 +12,15 @@ services:
       - go_app
     networks:
       - app-network
+      - frontend-network
+
+  nextjs:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nextjs_container
+    networks:
+      - frontend-network
 
   # go_app:
   #   build:
@@ -47,6 +56,8 @@ services:
 
 networks:
   app-network:
+    driver: bridge
+  frontend-network:
     driver: bridge
 
 volumes:
