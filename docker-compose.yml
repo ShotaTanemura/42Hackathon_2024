@@ -9,27 +9,34 @@ services:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - go_app
+      app:
+        condition: service_healthy
     networks:
       - app-network
 
-  # go_app:
-  #   build:
-  #     context: ./go_app
-  #     dockerfile: Dockerfile
-  #   container_name: go_app_container
-  #   ports:
-  #     - "8000:8000"
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - app-network
-  #   environment:
-  #     - DB_HOST=db
-  #     - DB_PORT=5432
-  #     - DB_USER=postgres
-  #     - DB_PASSWORD=postgres
-  #     - DB_NAME=goapp
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app_container
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=goapp
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/helloworld"]  # Adjust the path as necessary
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   db:
     image: postgres:13
@@ -44,6 +51,11 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s 
+      retries: 5
 
 networks:
   app-network:
