@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { OptionButton } from '@/components/OptionButton'
 import { vehicleOptions, bagOptions } from '@/config/driveOption'
+import { useRouter } from 'next/navigation'
 
 export default function Component() {
+  const router = useRouter()
   const [vehicleType, setVehicleType] = useState<keyof typeof vehicleOptions | null>(null)
   const [bagType, setBagType] = useState<keyof typeof bagOptions | null>(null)
   const [temperature, setTemperature] = useState<string>('')
@@ -92,6 +94,7 @@ export default function Component() {
             : 'bg-gray-300 cursor-not-allowed'
         }`}
         disabled={!isFormValid()}
+        onClick={() => router.push('/wait')}
       >
         Start
       </button>
