@@ -155,13 +155,16 @@ const DataCollectorButton: React.FC = () => {
       };
 
       // バックエンドにデータを送信 (fetchを使用)
-      const response = await fetch("https://localhost/api/v1/deliveries/123e4567-e89b-12d3-a456-426614174000/scores", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "https://localhost/api/v1/deliveries/123e4567-e89b-12d3-a456-426614174000/scores",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -170,7 +173,8 @@ const DataCollectorButton: React.FC = () => {
       }
 
       const responseData = await response.json();
-      console.log(responseData);
+      // console.log(responseData);
+      localStorage.setItem("response", JSON.stringify(responseData));
       setSendSuccess(true);
 
       // 送信後、IndexedDBのデータをクリア
