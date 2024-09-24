@@ -24,8 +24,18 @@ func generateUniqueID() string {
 
 // DeliveryData represents the incoming delivery data
 type DeliveryData struct {
-	Motions      []Motion      `json:"motions"`
-	Orientations []Orientation  `json:"orientations"`
+	Motions      []MotionWrapper      `json:"motions"`        // Array of MotionWrapper objects
+	Orientations []OrientationWrapper `json:"orientations"`   // Array of OrientationWrapper objects
+}
+
+// MotionWrapper wraps the motion object to match the incoming JSON format
+type MotionWrapper struct {
+	Motion Motion `json:"motion"` // Motion object inside each array element
+}
+
+// OrientationWrapper wraps the orientation object to match the incoming JSON format
+type OrientationWrapper struct {
+	Orientation Orientation `json:"orientation"` // Orientation object inside each array element
 }
 
 type float = float64

@@ -55,48 +55,54 @@ components:
           schema:
             $ref: "#/components/schemas/errorMessage"
   schemas:
+    motion:
+      type: object
+      properties:
+        x:
+          type: number
+          format: float
+        y:
+          type: number
+          format: float
+        z:
+          type: number
+          format: float
+      required:
+        - x
+        - y
+        - z
+    orientation:
+      type: object
+      properties:
+        alpha:
+          type: number
+          format: float
+        beta:
+          type: number
+          format: float
+        gamma:
+          type: number
+          format: float
+      required:
+        - alpha
+        - beta
+        - gamma
     postDeliveriesScoresRequest:
       type: object
       properties:
         motions:
           type: array
-          description: array of motions
+          description: array of motion
           items:
-            type: object
-            properties:
-              motion:
-                type: object
-                properties:
-                  x:
-                    type: number
-                    format: float
-                  y:
-                    type: number
-                    format: float
-                  z:
-                    type: number
-                    format: float
-        oritentations:
+            $ref: "#/components/schemas/motion"
+        orientations:
           type: array
-          description: array of oritentations
+          description: array of orientation
           items:
-            type: object
-            properties:
-              oritentation:
-                type: object
-                properties:
-                  alpha:
-                    type: number
-                    format: float
-                  beta:
-                    type: number
-                    format: float
-                  gamma:
-                    type: number
-                    format: float
+            $ref: "#/components/schemas/orientation"
       required:
         - motions
-        - oritentations
+        - orientations
     postDeliveriesScoresResponse:
       type: object
       description: Succeeded in saving scores
