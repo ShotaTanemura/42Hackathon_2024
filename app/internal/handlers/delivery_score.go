@@ -3,8 +3,22 @@ package handlers
 import (
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"github.com/google/uuid"
 	"carbon_driver_app/internal/accessdb"
+	"time"
 )
+
+// Constants for score thresholds
+const (
+	threshold          = 5.0  // Replace with appropriate value for sudden stops/accelerations
+	orientationThreshold = 10.0 // Replace with appropriate value for orientation changes
+)
+
+// generateUniqueID generates a new unique ID
+func generateUniqueID() string {
+	return uuid.NewString() // Generate a new UUID as a string
+}
 
 // DeliveryData represents the incoming delivery data
 type DeliveryData struct {
@@ -25,7 +39,7 @@ type Orientation struct {
 }
 
 // PostDeliveryScores handles the incoming delivery scores request
-func PostDeliveryScores(c *gin.Context, db *accessdb.DB) {
+func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 	var data DeliveryData
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

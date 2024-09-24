@@ -3,10 +3,11 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"gorm.io/gorm"
 )
 
 // SetupRoutes sets up the routes for the application
-func SetupRoutes(router *gin.Engine, db *accessdb.DB) {
+func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 	router.GET("/helloworld", GetHelloWorld)
 	router.POST("/api/v1/deliveries/:uuid/scores", func(c *gin.Context) {
 		PostDeliveryScores(c, db)
