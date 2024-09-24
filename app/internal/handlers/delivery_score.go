@@ -98,7 +98,7 @@ func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 }
 
 // CalculateDeliveryScore calculates the score based on motion data
-func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationWrapper) int, []float {
+func CalculateDeliveryScore(motions []MotionWrapper, orientations []OrientationWrapper) (int, []float) {
 	score := initialScore
 	var magnitudes []float
 
