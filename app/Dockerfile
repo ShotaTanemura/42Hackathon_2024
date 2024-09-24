@@ -1,5 +1,5 @@
 # Use the official Golang image as a base
-FROM golang:1.20-alpine AS build
+FROM golang:1.23-alpine AS build
 
 # Install required dependencies
 RUN apk add --no-cache git
