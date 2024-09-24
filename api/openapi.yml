@@ -111,8 +111,15 @@ components:
           type: integer
           description: delivery score
           example: 100
+        magnitudes:
+          type: array
+          description: array of magnitude
+          items:
+            type: number
+            format: float
       required:
         - score
+        - magnitudes
     errorMessage:
       type: object
       properties:

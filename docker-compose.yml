@@ -17,7 +17,7 @@ services:
       - app-network
       - frontend-network
     env_file:
-      - .env.template
+      - .env
 
   nextjs:
     build:
@@ -27,7 +27,7 @@ services:
     networks:
       - frontend-network
     env_file:
-      - .env.template
+      - .env
 
   app:
     build:
@@ -45,7 +45,7 @@ services:
       timeout: 3s
       retries: 5
     env_file:
-      - .env.template
+      - .env
 
   db:
     image: postgres:13
@@ -66,7 +66,7 @@ services:
       timeout: 5s 
       retries: 5
     env_file:
-      - .env.template
+      - .env
 
 networks:
   app-network:
