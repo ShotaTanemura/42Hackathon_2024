@@ -2,24 +2,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { openDB, DBSchema } from 'idb';
 
-// IndexedDB のスキーマ定義
-interface CarbonTokenDB extends DBSchema {
-  accelerometer: {
+interface PostDeliveriesScoresRequestDB extends DBSchema {
+  motions: {
     key: number;
     value: {
       x: number;
       y: number;
       z: number;
-      timestamp: number;
     };
   };
-  tilt: {
+  orientations: {
     key: number;
     value: {
       alpha: number;
       beta: number;
       gamma: number;
-      timestamp: number;
     };
   };
 }
@@ -27,59 +24,32 @@ interface CarbonTokenDB extends DBSchema {
 const DataCollector: React.FC = () => {
   const [accelerometerData, setAccelerometerData] = useState<{ x: number; y: number; z: number }>({ x: 0, y: 0, z: 0 });
   const [tiltData, setTiltData] = useState<{ alpha: number; beta: number; gamma: number }>({ alpha: 0, beta: 0, gamma: 0 });
-  const [accelerometerLog, setAccelerometerLog] = useState<
-    { x: number; y: number; z: number; timestamp: number }[]
-  >([]);
-  const [tiltLog, setTiltLog] = useState<
-    { alpha: number; beta: number; gamma: number; timestamp: number }[]
-  >([]);
   const [permissionGranted, setPermissionGranted] = useState<boolean>(false);
   const [permissionDenied, setPermissionDenied] = useState<boolean>(false);
+  const [isSending, setIsSending] = useState<boolean>(false);
+  const [sendSuccess, setSendSuccess] = useState<boolean | null>(null);
 
   // IndexedDB の初期化
-  useEffect(() => {
-    const initializeDB = async () => {
-      try {
-        const db = await openDB<CarbonTokenDB>('CarbonTokenDB', 1, {
-          upgrade(db) {
-            if (!db.objectStoreNames.contains('accelerometer')) {
-              db.createObjectStore('accelerometer', { keyPath: 'timestamp' });
-            }
-            if (!db.objectStoreNames.contains('tilt')) {
-              db.createObjectStore('tilt', { keyPath: 'timestamp' });
-            }
-          },
-        });
-        // 初回ロード時にログを取得
-        const accelData = await db.getAll('accelerometer');
-        const tiltData = await db.getAll('tilt');
-        setAccelerometerLog(accelData);
-        setTiltLog(tiltData);
-      } catch (error) {
-        console.error('IndexedDBの初期化中にエラーが発生しました:', error);
-      }
-    };
+  const initializeDB = async () => {
+    try {
+      const db = await openDB<PostDeliveriesScoresRequestDB>('PostDeliveriesScoresRequestDB', 1, {
+        upgrade(db) {
+          if (!db.objectStoreNames.contains('motions')) {
+            db.createObjectStore('motions', { autoIncrement: true });
+          }
+          if (!db.objectStoreNames.contains('orientations')) {
+            db.createObjectStore('orientations', { autoIncrement: true });
+          }
+        },
+      });
+      console.log('IndexedDBが初期化されました');
+    } catch (error) {
+      console.error('IndexedDBの初期化中にエラーが発生しました:', error);
+    }
+  };
 
+  useEffect(() => {
     initializeDB();
-  }, []);
-
-  // データログの定期的な取得
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const db = await openDB<CarbonTokenDB>('CarbonTokenDB', 1);
-        const accelData = await db.getAll('accelerometer');
-        const tiltData = await db.getAll('tilt');
-        setAccelerometerLog(accelData);
-        setTiltLog(tiltData);
-      } catch (error) {
-        console.error('データログ取得中にエラーが発生しました:', error);
-      }
-    };
-
-    const interval = setInterval(fetchLogs, 5000); // 5秒ごとにログを更新
-
-    return () => clearInterval(interval);
   }, []);
 
   // デバイスモーションイベントハンドラー
@@ -90,12 +60,12 @@ const DataCollector: React.FC = () => {
         x: acceleration.x || 0,
         y: acceleration.y || 0,
         z: acceleration.z || 0,
-        timestamp: event.timeStamp,
       };
       setAccelerometerData(data);
       try {
-        const db = await openDB<CarbonTokenDB>('CarbonTokenDB', 1);
-        await db.add('accelerometer', data);
+        const db = await openDB<PostDeliveriesScoresRequestDB>('PostDeliveriesScoresRequestDB', 1);
+        await db.add('motions', data);
+        console.log('加速度データをIndexedDBに保存しました:', data);
       } catch (error) {
         console.error('加速度データの保存中にエラーが発生しました:', error);
       }
@@ -108,12 +78,12 @@ const DataCollector: React.FC = () => {
       alpha: event.alpha || 0,
       beta: event.beta || 0,
       gamma: event.gamma || 0,
-      timestamp: event.timeStamp,
     };
     setTiltData(data);
     try {
-      const db = await openDB<CarbonTokenDB>('CarbonTokenDB', 1);
-      await db.add('tilt', data);
+      const db = await openDB<PostDeliveriesScoresRequestDB>('PostDeliveriesScoresRequestDB', 1);
+      await db.add('orientations', data);
+      console.log('傾きデータをIndexedDBに保存しました:', data);
     } catch (error) {
       console.error('傾きデータの保存中にエラーが発生しました:', error);
     }
@@ -156,6 +126,66 @@ const DataCollector: React.FC = () => {
     }
   }, [handleDeviceMotion, handleDeviceOrientation]);
 
+  // データ送信関数
+  const sendDataToAPI = useCallback(async () => {
+    setIsSending(true);
+    setSendSuccess(null);
+    try {
+      const db = await openDB<PostDeliveriesScoresRequestDB>('PostDeliveriesScoresRequestDB', 1);
+
+      // motions と orientations の全データを取得
+      const motions = await db.getAll('motions');
+      const orientations = await db.getAll('orientations');
+
+      if (motions.length === 0 && orientations.length === 0) {
+        console.log('送信するデータがありません');
+        setIsSending(false);
+        return;
+      }
+
+      // APIスキーマに合わせてデータを構築
+      const payload = {
+        motions,
+        orientations,
+      };
+
+      // バックエンドにデータを送信 (fetchを使用)
+      try {
+        const response = await fetch('/server/data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+        }
+
+        const responseData = await response.json();
+        console.log('データをバックエンドに送信しました:', payload);
+        console.log('バックエンドからのレスポンス:', responseData);
+        setSendSuccess(true);
+
+        // 送信後、IndexedDBのデータをクリア
+        const tx = db.transaction(['motions', 'orientations'], 'readwrite');
+        await tx.objectStore('motions').clear();
+        await tx.objectStore('orientations').clear();
+        await tx.done;
+        console.log('IndexedDBのデータをクリアしました');
+      } catch (error) {
+        console.error('バックエンドへのデータ送信中にエラーが発生しました:', error);
+        setSendSuccess(false);
+      }
+    } catch (error) {
+      console.error('データ送信処理中にエラーが発生しました:', error);
+      setSendSuccess(false);
+    } finally {
+      setIsSending(false);
+    }
+  }, []);
+
   // クリーンアップ: コンポーネントがアンマウントされる際にイベントリスナーを削除
   useEffect(() => {
     return () => {
@@ -190,26 +220,20 @@ const DataCollector: React.FC = () => {
         </p>
       )}
 
-      <h2>データログ</h2>
-      <div style={{ maxHeight: '200px', overflowY: 'scroll', border: '1px solid #ccc', padding: '1rem' }}>
-        <h3>加速度ログ</h3>
-        <ul>
-          {accelerometerLog.map((data) => (
-            <li key={data.timestamp}>
-              時間: {new Date(data.timestamp).toLocaleTimeString()}, X: {data.x.toFixed(2)}, Y: {data.y.toFixed(2)}, Z: {data.z.toFixed(2)}
-            </li>
-          ))}
-        </ul>
-
-        <h3>傾きログ</h3>
-        <ul>
-          {tiltLog.map((data) => (
-            <li key={data.timestamp}>
-              時間: {new Date(data.timestamp).toLocaleTimeString()}, Alpha: {data.alpha.toFixed(2)}, Beta: {data.beta.toFixed(2)}, Gamma: {data.gamma.toFixed(2)}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* データ送信ボタン */}
+      {permissionGranted && (
+        <div style={{ marginTop: '1rem' }}>
+          <button onClick={sendDataToAPI} disabled={isSending}>
+            {isSending ? '送信中...' : 'データを送信する'}
+          </button>
+          {sendSuccess === true && (
+            <p style={{ color: 'green' }}>データの送信に成功しました。</p>
+          )}
+          {sendSuccess === false && (
+            <p style={{ color: 'red' }}>データの送信に失敗しました。</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
