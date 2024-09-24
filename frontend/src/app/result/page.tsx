@@ -4,10 +4,25 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ResultPage() {
-  const amount = 10;
+  const amount = 100;
   const [coins, setCoins] = useState<number[]>([]);
   const [isMinted, setIsMinted] = useState(false);
   const router = useRouter();
+  const [txStatus, setTxnStatus] = useState("not yet");
+
+  const getButtonLabel = () => {
+    switch (txStatus) {
+      case "not yet":
+        return `Mint ${amount} $CBT`;
+      case "process":
+        return "Mint Processing...";
+      case "done":
+        // Your code for "done" case
+        return "Mint Completed";
+      default:
+        return "Unknown Status";
+    }
+  };
 
   useEffect(() => {
     const response: string | null = localStorage.getItem("response");
@@ -15,11 +30,13 @@ export default function ResultPage() {
   });
 
   const handleMint = () => {
+    setTxnStatus("process");
     console.log("$CBT has been minted!");
     setIsMinted(true);
     generateCoins();
 
     setTimeout(() => {
+      setTxnStatus("done")
       router.push("/profile");
     }, 3000);
   };
@@ -49,7 +66,7 @@ export default function ResultPage() {
         className="px-6 py-3 bg-white text-[#D70F64] font-bold rounded-lg hover:bg-gray-200 transition"
         disabled={isMinted}
       >
-        {isMinted ? "Minted Successfully" : `Mint ${amount} $CBT`}{" "}
+        {getButtonLabel()}
         {/* ボタンのテキスト変更 */}
       </button>
       <div className="coin-container absolute w-full h-full top-0 left-0 pointer-events-none">
