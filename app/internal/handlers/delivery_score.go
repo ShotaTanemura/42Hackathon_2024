@@ -13,7 +13,7 @@ import (
 // Constants for score thresholds
 const (
 	initialScore			= 100
-	accelerationThreshold	= 5.0  // Replace with appropriate value for sudden stops/accelerations
+	accelerationThreshold	= 12.0  // Replace with appropriate value for sudden stops/accelerations
 	// orientationThreshold = 10.0 // Replace with appropriate value for orientation changes
 )
 
