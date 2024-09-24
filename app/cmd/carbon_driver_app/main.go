@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"carbon_driver_app/internal/accessdb"
 	"carbon_driver_app/internal/handlers"
 	"carbon_driver_app/internal/loadconfig"
@@ -25,6 +26,10 @@ func main() {
 	err = accessdb.RunMigrations(db)
 	if err != nil {
 		log.Fatal("Failed to run migrations:", err)
+	}
+
+	if os.Getenv("DB_SEED") == "true" {
+		accessdb.SeedData(db)
 	}
 
 	// Initialize Gin router
