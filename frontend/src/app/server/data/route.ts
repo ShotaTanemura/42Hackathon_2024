@@ -79,6 +79,7 @@ function resampleTo1Hz<T extends { timestamp: number }>(data: T[]): T[] {
 
 export async function POST(request: NextRequest) {
   try {
+    const ipaddress="192.168.0.150";
     const data: PostDeliveriesScoresRequest = await request.json();
 
     // データのバリデーション
@@ -127,7 +128,7 @@ export async function POST(request: NextRequest) {
       orientations: formattedOrientations,
     };
 
-    const response = await fetch("https://192.168.0.150/api/v1/deliveries/123e4567-e89b-12d3-a456-426614174000/scores", {
+    const response = await fetch(`https://${ipaddress}/api/v1/deliveries/123e4567-e89b-12d3-a456-426614174000/scores`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
