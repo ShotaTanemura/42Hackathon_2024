@@ -75,3 +75,30 @@ CarbonToken not only promotes environmentally friendly driving but also creates 
   - **ERC721 License**: Issue driver licenses as ERC721 tokens and update them based on driving performance.
   - **Infura**: Connect to the Ethereum blockchain via Infura for managing tokens and processing transactions.
   
+## Setup
+### Installation
+To setup the following construction
+- **NextJS**
+This system use all-in-one toolkit called "Bun" for JavaScript and TypeScript apps.
+It requires installation on your computer by executing the following command:
+`curl -fsSL https://bun.sh/install | bash`
+
+- **Docker**
+This system runs on Docker containers, so install docker compose command.
+
+### Environment variables
+Clone this repository on your computer.
+Create `.env` based on `.env_template` put in root of the repository,
+ and fill your environment variables.
+
+### Building
+Use the foloowing `make` targets
+- `make` : Build the Docker images, construct and run containers
+- `make stop` : Stop the running containers
+- `make re` : Rebuild and run containers
+- `make ls`: List up the available Docker images, networks, volumes, containers and runnning containers
+- `make purge` : Remove all the Docker containers, networks, images forcely
+
+## Demo use
+After the containers running properly, 
+access `https://{your-pc-ip-address}:443/` with the web browser of your smartphone.
