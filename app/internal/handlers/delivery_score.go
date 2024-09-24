@@ -27,15 +27,15 @@ type DeliveryData struct {
 }
 
 type Motion struct {
-	X []int `json:"x"`
-	Y []int `json:"y"`
-	Z []int `json:"z"`
+	X []float `json:"x"`
+	Y []float `json:"y"`
+	Z []float `json:"z"`
 }
 
 type Orientation struct {
-	Alpha []int `json:"alpha"`
-	Beta  []int `json:"beta"`
-	Gamma []int `json:"gamma"`
+	Alpha []float `json:"alpha"`
+	Beta  []float `json:"beta"`
+	Gamma []float `json:"gamma"`
 }
 
 // PostDeliveryScores handles the incoming delivery scores request
