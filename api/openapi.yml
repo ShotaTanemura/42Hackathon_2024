@@ -61,35 +61,39 @@ components:
         motions:
           type: array
           description: array of motions
-          example: array of motions
           items:
             type: object
             properties:
-              x:
-                type: number
-                format: float
-              y:
-                type: number
-                format: float
-              z:
-                type: number
-                format: float
+              motion:
+                type: object
+                properties:
+                  x:
+                    type: number
+                    format: float
+                  y:
+                    type: number
+                    format: float
+                  z:
+                    type: number
+                    format: float
         oritentations:
           type: array
           description: array of oritentations
-          example: array of oritentations
           items:
             type: object
             properties:
-              alpha:
-                type: number
-                format: float
-              beta:
-                type: number
-                format: float
-              gamma:
-                type: number
-                format: float
+              oritentation:
+                type: object
+                properties:
+                  alpha:
+                    type: number
+                    format: float
+                  beta:
+                    type: number
+                    format: float
+                  gamma:
+                    type: number
+                    format: float
       required:
         - motions
         - oritentations
