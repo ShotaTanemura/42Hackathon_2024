@@ -25,7 +25,7 @@ const DeliveryPage = () => {
           </div>
           <div className="text-right">
             <p className="text-3xl font-bold">3 min</p>
-            <p className="text-xl">0.6 mi</p>
+            <p className="text-xl">0.6 min</p>
           </div>
         </div>
         <div className="flex justify-end p-6">
