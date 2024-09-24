@@ -50,7 +50,7 @@ endif
 del_cert:
 	-rm $(KEY_PATH) $(CSR_PATH) $(CERT_PATH)
 
-up: env cert
+up: append_ip env cert
 	docker compose $(YAML) up -d --build
 start:
 	docker compose $(YAML) start
@@ -68,7 +68,7 @@ stop:
 	docker-compose $(YAML) stop
 restart:
 	docker-compose $(YAML) restart
-down: stop
+down: stop del_ip
 	docker-compose $(YAML) down -v
 clean:
 	-docker image ls | grep '<none>' | awk -F' ' '{print $$3}' | xargs --no-run-if-empty docker rmi --force
