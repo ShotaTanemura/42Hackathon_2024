@@ -88,7 +88,8 @@ This system runs on Docker containers, so install docker compose command.
 
 ### Environment variables
 Clone this repository on your computer.
-The `.env` file environment variables listed up in need to be put into root of the repository.
+Create `.env` based on `.env_template` put in root of the repository,
+ and fill your environment variables.
 
 ### Building
 Use the foloowing `make` targets
@@ -100,4 +101,4 @@ Use the foloowing `make` targets
 
 ## Demo use
 After the containers running properly, 
-access https://{your-pc-ip-address}:443/ with the web browser of your smartphone.
+access `https://{your-pc-ip-address}:443/` with the web browser of your smartphone.
