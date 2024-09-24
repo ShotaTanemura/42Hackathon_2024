@@ -13,13 +13,9 @@ const MainComponent = () => {
   const [temperature, setTemperature] = useState<string>('')
   const [autoAccept, setAutoAccept] = useState<boolean>(false)
 
-  const isTemperatureValid = () => {
-    const temp = parseFloat(temperature)
-    return temp >= 36.5 && temp <= 37.5
-  }
 
   const isFormValid = () => {
-    return vehicleType && bagType && isTemperatureValid()
+    return vehicleType && bagType && temperature
   }
 
   return (
