@@ -38,10 +38,10 @@ export default function ResultPage() {
   }, []);
 
   const handleMint = async () => {
-    if (!smartAccount || !smartAccountAddress) {
-      alert("Smart account is not initialized.");
-      return;
-    }
+    // if (!smartAccount || !smartAccountAddress) {
+    //   alert("Smart account is not initialized.");
+    //   return;
+    // }
 
     // Move generateCoins function here
     const generateCoins = () => {
@@ -56,31 +56,31 @@ export default function ResultPage() {
       }, 3000);
     };
 
-    setTxnStatus("process");
+    // setTxnStatus("process");
     console.log("$CBT has been minted!");
-    console.log("Smart Account Address:", smartAccountAddress);
+    // console.log("Smart Account Address:", smartAccountAddress);
 
     try {
-      const erc20ContractAddress = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_CONTRACT || "";
-      const mintAmount = ethers.utils.parseUnits(amount.toString(), 18);
-      const mintData = new ethers.utils.Interface(erc20ABI[0].abi).encodeFunctionData("mint", [
-        smartAccountAddress,
-        mintAmount,
-      ]);
-      const mintTx = {
-        to: erc20ContractAddress,
-        data: mintData,
-        from: smartAccountAddress,
-        gasLimit: 300000,
-      };
-      const userOpResponse = await smartAccount.sendTransaction(mintTx, {
-        paymasterServiceData: { mode: PaymasterMode.SPONSORED },
-      });
-      const { transactionHash } = await userOpResponse.waitForTxHash();
-       // @ts-expect-error: this is any type
-      console.log(createSepoliaEtherscanLink(transactionHash));
-      setTxnStatus("done");
-      setIsMinted(true);
+      // const erc20ContractAddress = process.env.NEXT_PUBLIC_SEPOLIA_ERC20_CONTRACT || "";
+      // const mintAmount = ethers.utils.parseUnits(amount.toString(), 18);
+      // const mintData = new ethers.utils.Interface(erc20ABI[0].abi).encodeFunctionData("mint", [
+      //   // smartAccountAddress,
+      //   mintAmount,
+      // ]);
+      // const mintTx = {
+      //   to: erc20ContractAddress,
+      //   data: mintData,
+      //   from: smartAccountAddress,
+      //   gasLimit: 300000,
+      // };
+      // const userOpResponse = await smartAccount.sendTransaction(mintTx, {
+      //   paymasterServiceData: { mode: PaymasterMode.SPONSORED },
+      // });
+      // const { transactionHash } = await userOpResponse.waitForTxHash();
+      //  // @ts-expect-error: this is any type
+      // console.log(createSepoliaEtherscanLink(transactionHash));
+      // setTxnStatus("done");
+      // setIsMinted(true);
       generateCoins(); // Now it's called after declaration
       setTimeout(() => {
         router.push("/profile");

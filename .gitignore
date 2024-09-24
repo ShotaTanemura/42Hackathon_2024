@@ -25,3 +25,6 @@ go.work.sum
 .env
 .env.example
 .env
+
+server.crt
+server.key
