@@ -41,6 +41,7 @@ services:
         condition: service_healthy
     networks:
       - app-network
+      - db-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/helloworld"]  # Adjust the path as necessary
       interval: 5s
@@ -56,12 +57,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: goapp
-    ports:
-      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - app-network
+      - db-network
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}"]
       interval: 5s
@@ -74,6 +73,8 @@ networks:
   app-network:
     driver: bridge
   frontend-network:
+    driver: bridge
+  db-network:
     driver: bridge
 
 volumes:
