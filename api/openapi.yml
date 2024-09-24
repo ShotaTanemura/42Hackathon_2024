@@ -1,7 +1,7 @@
 openapi: '3.0.2'
 info:
-  title: FoodpandaCarbontokenApp API
-  description: "This is API for FoodpandaCarbontokenApp"
+  title: CarbonDriverApp API
+  description: "This is API for CarbonDriverApp"
   version: '1.0'
 servers:
   - url: http://localhost:8080
