@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { OptionButton } from '@/components/OptionButton'
 import { vehicleOptions, bagOptions } from '@/config/driveOption'
 import { useRouter } from 'next/navigation'
+import { SplashScreen } from '@/components/SplashScreen'
 
-export default function Component() {
+const MainComponent = () => {
   const router = useRouter()
   const [vehicleType, setVehicleType] = useState<keyof typeof vehicleOptions | null>(null)
   const [bagType, setBagType] = useState<keyof typeof bagOptions | null>(null)
@@ -100,4 +101,18 @@ export default function Component() {
       </button>
     </div>
   )
+}
+
+export default function App() {
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false)
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  return showSplash ? <SplashScreen /> : <MainComponent />
 }

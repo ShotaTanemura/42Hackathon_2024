@@ -16,3 +16,11 @@
 .fade-out {
     animation: slideUpFadeOut 0.5s forwards;
 }
+
+.mapboxgl-ctrl-top-left {
+    width: 100%;
+    height: 50%; /* ルート案内部分を上半分に収める */
+    overflow-y: scroll; /* 必要に応じてスクロール可能に */
+    position: absolute;
+    top: 0;
+}
