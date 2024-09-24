@@ -122,8 +122,10 @@ const DataCollector: React.FC = () => {
   // 許可をリクエストする関数
   const requestPermission = useCallback(async () => {
     console.log('requestPermissionが呼び出されました');
+    // @ts-ignore
     if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
       try {
+        // @ts-ignore
         const response = await DeviceMotionEvent.requestPermission();
         console.log('DeviceMotionEvent.requestPermissionの応答:', response);
         if (response === 'granted') {
