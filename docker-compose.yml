@@ -34,8 +34,6 @@ services:
       context: ./app
       dockerfile: Dockerfile
     container_name: app_container
-    ports:
-      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy

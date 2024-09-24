@@ -35,7 +35,7 @@ COPY --from=build /app/main .
 # COPY config.yaml ./
 
 # Expose the port on which the app will run
-EXPOSE 8000
+EXPOSE 8080
 
 # Set environment variables for database connection
 ENV DB_HOST=db
