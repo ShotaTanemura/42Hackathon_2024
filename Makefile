@@ -32,7 +32,7 @@ ifeq ("$(wildcard $(KEY_PATH))", "")
 	# openssl x509 -req -days 365 -in $(CSR_PATH) -signkey $(KEY_PATH) -out $(CERT_PATH)
 endif
 del_cert:
-	rm $(KEY_PATH) $(CSR_PATH) $(CERT_PATH)
+	-rm $(KEY_PATH) $(CSR_PATH) $(CERT_PATH)
 
 up: cert
 	docker compose $(YAML) up -d --build
