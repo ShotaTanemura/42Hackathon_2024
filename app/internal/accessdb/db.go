@@ -14,12 +14,15 @@ type User struct {
 	Email    string
 	Password string
 	Icon     string
+	// DeliveryScores is a one-to-many relationship with DeliveryScore
+	DeliveryScores []DeliveryScore `gorm:"foreignKey:UserID;references:UID"`
 }
 
 // DeliveryScore model
 type DeliveryScore struct {
 	UID       string `gorm:"primaryKey"`
-	UserID    string
+	UserID    string `gorm:"not null"` // UserID is the foreign key
+	User      User   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:UserID;references:UID"`
 	CreatedAt string
 	UpdatedAt string
 	Score     int
