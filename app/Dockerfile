@@ -1,4 +1,4 @@
-# Use the official Golang image as a base
+# Use the official Golang image as a base for building the app
 FROM golang:1.23-alpine AS build
 
 # Install required dependencies
@@ -7,23 +7,23 @@ RUN apk add --no-cache git
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the Go module files
+# Copy the Go module files to the container
 COPY go.mod go.sum ./
 
 # Download dependencies
 RUN go mod download
 
-# Copy the entire app directory to the container
+# Copy the entire project directory (including internal/ and cmd/)
 COPY . .
 
-# Build the Go application
-RUN go build -o main .
+# Build the Go application targeting the cmd/carbon_driver_app directory
+RUN go build -o main ./cmd/carbon_driver_app
 
 # Use a minimal alpine image for the final container
 FROM alpine:latest
 
-# Install ca-certificates to ensure https support
-RUN apk --no-cache add ca-certificates
+# Install ca-certificates and curl for health checks
+RUN apk --no-cache add ca-certificates curl
 
 # Set the working directory inside the final container
 WORKDIR /root/
