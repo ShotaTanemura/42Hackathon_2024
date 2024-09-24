@@ -10,7 +10,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y python3 build-essential && rm -rf /var/lib/apt/lists/*
 
 # Copy the dependencies files and install dependencies
-COPY bun.lockb package.json ./
+COPY package.json ./
 RUN bun install
 
 # Copy the rest of the project files
