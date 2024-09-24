@@ -35,6 +35,7 @@ const MainComponent = () => {
                 selectedType={vehicleType}
                 setType={setVehicleType}
                 icon={option.icon}
+                isEco={option.isEco}
               />
             ))}
           </div>

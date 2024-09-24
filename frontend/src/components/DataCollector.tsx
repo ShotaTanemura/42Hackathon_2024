@@ -151,7 +151,7 @@ const DataCollector: React.FC = () => {
 
       // バックエンドにデータを送信 (fetchを使用)
       try {
-        const response = await fetch('/server/data', {
+        const response = await fetch('/api/v1/deliveries/123e4567-e89b-12d3-a456-426614174000/scores', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
