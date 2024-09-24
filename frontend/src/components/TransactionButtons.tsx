@@ -1,33 +1,23 @@
 import React from 'react';
 
 interface TransactionButtonsProps {
-  getCountId: () => void;
-  incrementCount: () => void;
+  mint: () => void;
   txnHash: string | null;
   explorerUrl: string;
-  count: string | null;
 }
 
-const TransactionButtons: React.FC<TransactionButtonsProps> = ({ getCountId, incrementCount, txnHash, explorerUrl, count }) => {
+const TransactionButtons: React.FC<TransactionButtonsProps> = ({ mint, txnHash, explorerUrl }) => {
   return (
     <div className="flex flex-row justify-between items-start gap-8">
       <div className="flex flex-col justify-center items-center gap-4">
         <button
           className="w-[10rem] h-[3rem] bg-orange-300 text-black font-bold rounded-lg"
-          onClick={getCountId}
+          onClick={mint}
         >
-          Get Count Id
+          mint
         </button>
-		<span>{count !== null ? `Current Count: ${count}` : 'Count not available'}</span>
-        <span>{txnHash}</span>
       </div>
       <div className="flex flex-col justify-center items-center gap-4">
-        <button
-          className="w-[10rem] h-[3rem] bg-orange-300 text-black font-bold rounded-lg"
-          onClick={incrementCount}
-        >
-          Increment Count
-        </button>
         {txnHash && (
           <a
             target="_blank"
@@ -35,7 +25,7 @@ const TransactionButtons: React.FC<TransactionButtonsProps> = ({ getCountId, inc
             href={`${explorerUrl}${txnHash}`}
           >
             <span className="text-white font-bold underline">
-              Txn Hash
+              Tx Hash
             </span>
           </a>
         )}

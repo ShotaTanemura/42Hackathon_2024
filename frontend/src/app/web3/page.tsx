@@ -5,8 +5,8 @@ import { createSmartAccountClient, BiconomySmartAccountV2, PaymasterMode } from 
 import { ethers, providers } from "ethers";
 import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { contractABI } from "@/contract/contractABI";
-import { toast } from "react-toastify";
+import { erc721ABI } from "@/contract/erc721ABI";
+// import { toast } from "react-toastify";
 import { chains } from '@/conf/chains';
 import "react-toastify/dist/ReactToastify.css";
 import ChainSelector from "@/components/ChainSelector";
@@ -14,12 +14,12 @@ import SmartAccountInfo from "@/components/SmartAccountInfo";
 import TransactionButtons from "@/components/TransactionButtons";
 
 export default function Home() {
-  // ステートとチェーン情報の定義はそのまま
   const [smartAccount, setSmartAccount] = useState<BiconomySmartAccountV2 | null>(null);
   const [smartAccountAddress, setSmartAccountAddress] = useState<string | null>(null);
-  const [count, setCount] = useState<string | null>(null);
   const [txnHash, setTxnHash] = useState<string | null>(null);
   const [chainSelected, setChainSelected] = useState<number>(0);
+
+  const web3authClient = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || "";
 
   const connect = async () => {
     try {
@@ -44,10 +44,9 @@ export default function Home() {
               tickerName: "Polygon Matic",
             };
 
-      //Creating web3auth instance
+      // //Creating web3auth instance
       const web3auth = new Web3Auth({
-        clientId:
-          "BExrkk4gXp86e9VCrpxpjQYvmojRSKHstPRczQA10UQM94S5FtsZcxx4Cg5zk58F7W1cAGNVx1-NPJCTFIzqdbs", // Get your Client ID from the Web3Auth Dashboard https://dashboard.web3auth.io/
+        clientId: web3authClient, // Get your Client ID from the Web3Auth Dashboard https://dashboard.web3auth.io/
         web3AuthNetwork: "sapphire_devnet", // Web3Auth Network
         chainConfig,
         uiConfig: {
@@ -92,67 +91,30 @@ export default function Home() {
     }
   };
 
-  const getCountId = async () => {
-    const contractAddress = chains[chainSelected].incrementCountContractAdd;
-    const provider = new ethers.providers.JsonRpcProvider(
-      chains[chainSelected].providerUrl
-    );
-    const contractInstance = new ethers.Contract(
-      contractAddress,
-      contractABI,
-      provider
-    );
-    const countId = await contractInstance.getCount();
-    setCount(countId.toString());
+  // minting
+const mintNFT = async () => {
+  const tokenURI = "ipfs://sample";
+
+  const mintData = new ethers.utils.Interface(erc721ABI[0].abi)
+    .encodeFunctionData("mintToken", [tokenURI]);
+  const mintTx = {
+    to: chains[chainSelected].erc721Contract,
+    data: mintData,
+    from: smartAccountAddress,
+    gasLimit: 300000,
   };
 
-  const incrementCount = async () => {
-    try {
-      const toastId = toast("Populating Transaction", { autoClose: false });
-
-      const contractAddress = chains[chainSelected].incrementCountContractAdd;
-      const provider = new ethers.providers.JsonRpcProvider(
-        chains[chainSelected].providerUrl
-      );
-      const contractInstance = new ethers.Contract(
-        contractAddress,
-        contractABI,
-        provider
-      );
-      const minTx = await contractInstance.populateTransaction.increment();
-      console.log("Mint Tx Data", minTx.data);
-      const tx1 = {
-        to: contractAddress,
-        data: minTx.data,
-      };
-
-      toast.update(toastId, {
-        render: "Sending Transaction",
-        autoClose: false,
-      });
-
-      //@ts-expect-error This line fails due to type inference issues with the library
-      const userOpResponse = await smartAccount?.sendTransaction(tx1, {
-        paymasterServiceData: { mode: PaymasterMode.SPONSORED },
-      });
-      //@ts-expect-error This line fails due to type inference issues with the library
-      const { transactionHash } = await userOpResponse.waitForTxHash();
-      console.log("Transaction Hash", transactionHash);
-
-      if (transactionHash) {
-        toast.update(toastId, {
-          render: "Transaction Successful",
-          type: "success",
-          autoClose: 5000,
-        });
-        setTxnHash(transactionHash);
-        await getCountId();
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Transaction Unsuccessful", { autoClose: 5000 });
-    }
-  };
+  if (smartAccount) {
+    const userOpResponse = await smartAccount.sendTransaction(mintTx, {
+      paymasterServiceData: { mode: PaymasterMode.SPONSORED}
+    });
+    const { transactionHash } = await userOpResponse.waitForTxHash();
+    console.log("Mint Transaction Hash:", transactionHash);
+    setTxnHash(transactionHash || null);
+  } else {
+    console.error("Smart account is not initialized.");
+  }
+};
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start gap-8 p-24">
@@ -175,11 +137,9 @@ export default function Home() {
         <>
           <SmartAccountInfo smartAccountAddress={smartAccountAddress} chainName={chains[chainSelected].name} />
           <TransactionButtons
-            getCountId={getCountId}
-            incrementCount={incrementCount}
             txnHash={txnHash}
             explorerUrl={chains[chainSelected].explorerUrl}
-			count={count}
+			      mint={mintNFT}
           />
           <span className="text-white">Open console to view console logs.</span>
         </>
