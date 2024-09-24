@@ -82,31 +82,22 @@ func PostDeliveryScores(c *gin.Context, db *gorm.DB) {
 	})
 }
 
-// CalculateDeliveryScore calculates the score based on motion and orientation data
-func CalculateDeliveryScore(motions []Motion, orientations []Orientation) int {
-	score := 100 // starting score
+// CalculateDeliveryScore calculates the score based on motion data
+func CalculateDeliveryScore(motions []Acceleration, orientations []Orientation) int {
+	score := initialScore
 
-	// Implement logic to adjust the score based on the motion and orientation data
 	for _, motion := range motions {
-		for _, x := range motion.X {
-			if x > threshold { // Define your threshold for abrupt movement
-				score -= 10 // Deduct points for sudden stops or accelerations
-			} else {
-				score += 5 // Add points for smoother movements
-			}
+		// Calculate the magnitude of acceleration vector
+		accelerationMagnitude := math.Sqrt(motion.X*motion.X + motion.Y*motion.Y + motion.Z*motion.Z)
+
+		// Check if the acceleration exceeds the threshold
+		if accelerationMagnitude > accelerationThreshold {
+			score -= 10 // Decrease score if acceleration exceeds the threshold
 		}
 	}
 
-	// You can also consider the orientation data to adjust the score further
-	for _, orientation := range orientations {
-		for _, alpha := range orientation.Alpha {
-			if alpha > orientationThreshold { // Define your threshold for orientations
-				score -= 5 // Deduct points for abrupt orientation changes
-			} else {
-				score += 2 // Add points for smooth orientation
-			}
-		}
-	}
+	// Optionally, include logic for orientation checks here
+	_ = orientations
 
 	return score
 }
