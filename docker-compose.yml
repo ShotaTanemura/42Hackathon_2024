@@ -16,6 +16,8 @@ services:
     networks:
       - app-network
       - frontend-network
+    env_file:
+      - .env.template
 
   nextjs:
     build:
@@ -24,6 +26,8 @@ services:
     container_name: nextjs_container
     networks:
       - frontend-network
+    env_file:
+      - .env.template
 
   app:
     build:
@@ -37,17 +41,13 @@ services:
         condition: service_healthy
     networks:
       - app-network
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=goapp
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/helloworld"]  # Adjust the path as necessary
       interval: 5s
       timeout: 3s
       retries: 5
+    env_file:
+      - .env.template
 
   db:
     image: postgres:13
@@ -67,6 +67,8 @@ services:
       interval: 5s
       timeout: 5s 
       retries: 5
+    env_file:
+      - .env.template
 
 networks:
   app-network:
