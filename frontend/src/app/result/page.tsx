@@ -1,16 +1,22 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function ResultPage() {
   const amount = 10;
   const [coins, setCoins] = useState<number[]>([]);
   const [isMinted, setIsMinted] = useState(false);
+  const router = useRouter();
 
   const handleMint = () => {
     console.log("$CBT has been minted!");
     setIsMinted(true);
     generateCoins();
+
+    setTimeout(() => {
+      router.push('/profile');
+    }, 3000);
   };
 
   const generateCoins = () => {

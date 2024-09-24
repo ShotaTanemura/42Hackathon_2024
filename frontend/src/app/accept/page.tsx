@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { Map } from '@/components/Map'
 import { useCurrentLocation } from '@/hooks/currentLocation'
+import { useRouter } from 'next/navigation'
 
 // @ts-expect-error: this is any type
 const Button = ({ children, className, ...props }) => (
@@ -19,6 +20,7 @@ const Card = ({ children, className, ...props }) => (
 )
 
 export default function Page() {
+  const router = useRouter()
   const countdown = 16
   const currentLocation = useCurrentLocation()
 
@@ -92,7 +94,8 @@ export default function Page() {
             <div className="text-sm text-gray-600 text-center">
               {countdown} seconds to auto-decline
             </div>
-            <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white">
+            <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white"
+              onClick={() => router.push('/delivery')}>
               Accept order
             </Button>
           </div>
